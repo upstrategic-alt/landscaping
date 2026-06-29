@@ -1,0 +1,1208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Stonebrook Landscape Co. — Land Reimagined, Austin TX</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,600;1,9..144,300;1,9..144,400&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3/dist/ScrollTrigger.min.js"></script>
+  <style>
+    :root {
+      --clay:        #C17B4F;
+      --clay-light:  #E3B894;
+      --clay-dark:   #95592F;
+      --forest:      #122016;
+      --forest-mid:  #1C2F22;
+      --cream:       #F6F2E8;
+      --text:        #292B24;
+      --text-muted:  #6C6F60;
+      --font-display:'Fraunces', Georgia, serif;
+      --font-body:   'Outfit', system-ui, sans-serif;
+      --max-w:       1200px;
+      --pad-x:       clamp(1.5rem, 6vw, 4rem);
+      --pad-y:       clamp(5rem, 10vw, 9rem);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--font-body);
+      font-weight: 300;
+      color: var(--text);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── NAV ───────────────────────────────────────────────── */
+    .nav {
+      position: fixed;
+      inset: 0 0 auto;
+      z-index: 100;
+      padding: 1.4rem var(--pad-x);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: background .4s, backdrop-filter .4s;
+    }
+    .nav.scrolled {
+      background: rgba(18,32,22,.88);
+      backdrop-filter: blur(18px);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-size: 1.5rem;
+      font-weight: 600;
+      letter-spacing: .02em;
+      color: #fff;
+    }
+    .nav-logo span { color: var(--clay-light); }
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    .nav-links a {
+      font-size: .7rem;
+      font-weight: 500;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.78);
+      transition: color .25s;
+    }
+    .nav-links a:hover { color: var(--clay-light); }
+    .nav-cta {
+      font-size: .7rem;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--forest);
+      background: var(--clay-light);
+      padding: .65rem 1.5rem;
+      border-radius: 2px;
+      transition: background .25s, color .25s;
+    }
+    .nav-cta:hover { background: var(--clay); color: #fff; }
+    @media (max-width: 768px) {
+      .nav-links, .nav-cta { display: none; }
+    }
+
+    /* ── HERO ──────────────────────────────────────────────── */
+    #hero-wrapper { position: relative; }
+    #hero {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      height: 100svh;
+      overflow: hidden;
+      background: var(--forest);
+    }
+    #hero-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+    }
+
+    .scroll-indicator {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .scroll-copy {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: .55rem;
+      text-align: center;
+    }
+    .scroll-kicker {
+      font-size: .62rem;
+      font-weight: 500;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--clay-light);
+    }
+    .scroll-title {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 4rem);
+      font-style: italic;
+      font-weight: 300;
+      line-height: 1.08;
+      color: #fff;
+    }
+    .scroll-cue {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+    }
+    .scroll-line {
+      display: block;
+      width: 1px;
+      height: 40px;
+      background: rgba(193,123,79,.45);
+      animation: lineGrow 1.8s ease-in-out infinite;
+    }
+    .scroll-chevrons { display: flex; flex-direction: column; gap: 4px; }
+    .scroll-chevron {
+      width: 8px;
+      height: 8px;
+      border-right: 1px solid rgba(193,123,79,.55);
+      border-bottom: 1px solid rgba(193,123,79,.55);
+      transform: rotate(45deg);
+      animation: chevFade 1.8s ease-in-out infinite;
+    }
+    .scroll-chevron:nth-child(2) { animation-delay: .15s; }
+    .scroll-chevron:nth-child(3) { animation-delay: .30s; }
+
+    @keyframes lineGrow {
+      0%,100% { opacity:.28; transform:scaleY(.55); }
+      50%      { opacity:1;   transform:scaleY(1); }
+    }
+    @keyframes chevFade {
+      0%,100% { opacity:.18; }
+      50%      { opacity:.9; }
+    }
+
+    .hero-content {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      pointer-events: none;
+      opacity: 0;
+      z-index: 10;
+    }
+    .hero-content.is-visible { pointer-events: auto; }
+    .hero-label {
+      font-size: .62rem;
+      font-weight: 500;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--clay-light);
+      margin-bottom: 1.2rem;
+    }
+    .hero-headline {
+      font-family: var(--font-display);
+      font-size: clamp(3rem, 7vw, 5.5rem);
+      font-weight: 300;
+      font-style: italic;
+      line-height: 1.0;
+      color: #fff;
+      margin-bottom: 1.25rem;
+    }
+    .hero-headline em { font-style: normal; font-weight: 600; }
+    .hero-sub {
+      font-size: clamp(.9rem, 1.4vw, 1.05rem);
+      font-weight: 300;
+      color: rgba(255,255,255,.76);
+      line-height: 1.72;
+      max-width: 470px;
+      margin-bottom: 2.5rem;
+      letter-spacing: .02em;
+    }
+    .hero-btns {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    /* ── BUTTONS ───────────────────────────────────────────── */
+    .btn {
+      display: inline-block;
+      font-family: var(--font-body);
+      font-size: .68rem;
+      font-weight: 500;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      padding: .88rem 2.2rem;
+      border-radius: 2px;
+      transition: all .28s;
+      cursor: pointer;
+    }
+    .btn--clay  { background: var(--clay-light); color: var(--forest); }
+    .btn--clay:hover { background: var(--clay); color: #fff; }
+    .btn--ghost { border: 1px solid rgba(255,255,255,.44); color: #fff; }
+    .btn--ghost:hover { border-color: var(--clay-light); color: var(--clay-light); }
+    .btn--outline { border: 1px solid var(--forest); color: var(--forest); }
+    .btn--outline:hover { background: var(--forest); color: #fff; }
+    .btn--outline-clay { border: 1px solid rgba(193,123,79,.5); color: var(--clay-light); }
+    .btn--outline-clay:hover { background: var(--clay-light); color: var(--forest); }
+
+    /* ── TICKER ────────────────────────────────────────────── */
+    .ticker {
+      background: var(--clay-light);
+      overflow: hidden;
+      padding: .88rem 0;
+    }
+    .ticker-track {
+      display: flex;
+      white-space: nowrap;
+      animation: tick 26s linear infinite;
+    }
+    .ticker-item {
+      display: inline-flex;
+      align-items: center;
+      gap: 1.4rem;
+      padding: 0 2rem;
+      font-size: .62rem;
+      font-weight: 500;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--forest);
+    }
+    .ticker-dot {
+      width: 3px; height: 3px;
+      border-radius: 50%;
+      background: var(--forest);
+      opacity: .45;
+      flex-shrink: 0;
+    }
+    @keyframes tick {
+      0%   { transform: translateX(0); }
+      100% { transform: translateX(-50%); }
+    }
+
+    /* ── SECTION BASE ──────────────────────────────────────── */
+    .section {
+      padding: var(--pad-y) var(--pad-x);
+    }
+    .section-inner { max-width: var(--max-w); margin: 0 auto; }
+    .kicker {
+      display: block;
+      font-size: .62rem;
+      font-weight: 500;
+      letter-spacing: .26em;
+      text-transform: uppercase;
+      color: var(--clay-dark);
+      margin-bottom: .9rem;
+    }
+    .kicker--light { color: var(--clay-light); }
+    h2.display {
+      font-family: var(--font-display);
+      font-size: clamp(2.2rem, 4.5vw, 3.5rem);
+      font-weight: 300;
+      line-height: 1.1;
+      color: var(--forest);
+    }
+    h2.display em { font-style: italic; font-weight: 400; color: var(--clay-dark); }
+    h2.display--light { color: #fff; }
+    h2.display--light em { color: var(--clay-light); }
+
+    /* ── SERVICES ──────────────────────────────────────────── */
+    .services { background: var(--cream); }
+    .services-hd {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 2rem;
+      margin-bottom: 3.5rem;
+    }
+    .services-sub {
+      font-size: clamp(.88rem, 1.3vw, 1rem);
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--text-muted);
+      max-width: 400px;
+    }
+    @media (max-width: 640px) {
+      .services-hd { flex-direction: column; }
+    }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 1.5px;
+      background: var(--clay-light);
+    }
+    @media (max-width: 900px) { .services-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 540px) { .services-grid { grid-template-columns: 1fr; } }
+
+    .svc-card {
+      background: var(--cream);
+      padding: 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: .9rem;
+      transition: background .3s;
+      cursor: pointer;
+    }
+    .svc-card:hover { background: var(--forest); }
+    .svc-card:hover .svc-num  { color: var(--clay-light); }
+    .svc-card:hover .svc-name,
+    .svc-card:hover .svc-desc { color: rgba(255,255,255,.82); }
+    .svc-card:hover .svc-link { color: var(--clay-light); }
+    .svc-num {
+      font-family: var(--font-display);
+      font-size: .78rem;
+      font-style: italic;
+      color: var(--clay-dark);
+      transition: color .3s;
+    }
+    .svc-icon { width: 32px; height: 32px; margin: .15rem 0; }
+    .svc-name {
+      font-family: var(--font-display);
+      font-size: 1.45rem;
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--forest);
+      transition: color .3s;
+    }
+    .svc-desc {
+      font-size: .84rem;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--text-muted);
+      transition: color .3s;
+    }
+    .svc-link {
+      font-size: .62rem;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--forest);
+      margin-top: auto;
+      padding-top: .5rem;
+      transition: color .3s;
+    }
+
+    /* ── BEFORE/AFTER GALLERY ──────────────────────────────── */
+    .gallery { background: var(--forest); }
+    .gallery-hd { text-align: center; margin-bottom: 3.5rem; }
+    .gallery-sub {
+      font-size: clamp(.88rem, 1.3vw, 1rem);
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(246,242,232,.62);
+      max-width: 480px;
+      margin: 0 auto;
+    }
+    .reveal-wrap {
+      position: relative;
+      max-width: 980px;
+      margin: 0 auto;
+      border-radius: 4px;
+      overflow: hidden;
+      aspect-ratio: 16/9;
+      box-shadow: 0 30px 60px rgba(0,0,0,.35);
+    }
+    .reveal-wrap img {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%; object-fit: cover;
+      user-select: none;
+    }
+    .reveal-after { clip-path: inset(0 0 0 var(--reveal, 50%)); }
+    .reveal-tag {
+      position: absolute; top: 1rem; z-index: 3;
+      font-size: .62rem; font-weight: 500; letter-spacing: .18em;
+      text-transform: uppercase; color: #fff;
+      background: rgba(10,19,13,.55); padding: .5rem .9rem; border-radius: 2px;
+    }
+    .reveal-tag--before { left: 1rem; }
+    .reveal-tag--after { right: 1rem; }
+    .reveal-handle {
+      position: absolute; top: 0; bottom: 0;
+      left: var(--reveal, 50%);
+      width: 2px; background: #fff;
+      transform: translateX(-1px);
+      z-index: 4; pointer-events: none;
+    }
+    .reveal-handle::after {
+      content: '⟷';
+      position: absolute; top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 44px; height: 44px;
+      background: var(--clay-light); color: var(--forest);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem; box-shadow: 0 4px 14px rgba(0,0,0,.25);
+    }
+    .reveal-slider {
+      position: absolute; inset: 0; width: 100%; height: 100%;
+      margin: 0; opacity: 0; cursor: ew-resize; z-index: 5;
+      -webkit-appearance: none; appearance: none;
+    }
+    .reveal-caption {
+      text-align: center; margin-top: 1.6rem;
+      font-size: .78rem; font-weight: 300;
+      color: rgba(246,242,232,.4);
+    }
+
+    /* ── PHILOSOPHY ────────────────────────────────────────── */
+    .philosophy { background: var(--forest); overflow: hidden; }
+    .philosophy-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+    }
+    @media (max-width: 820px) {
+      .philosophy-inner { grid-template-columns: 1fr; gap: 3rem; }
+    }
+    .phil-visual {
+      position: relative;
+      aspect-ratio: 3/4;
+      background: var(--forest-mid);
+      border: 1px solid rgba(193,123,79,.12);
+      overflow: hidden;
+    }
+    .phil-art {
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at 30% 60%, rgba(193,123,79,.22) 0%, transparent 58%),
+        radial-gradient(ellipse at 72% 28%, rgba(193,123,79,.10) 0%, transparent 48%);
+    }
+    .phil-lines {
+      position: absolute;
+      inset: 0;
+      opacity: .055;
+      background-image: repeating-linear-gradient(
+        0deg, transparent, transparent 39px,
+        rgba(193,123,79,1) 39px, rgba(193,123,79,1) 40px
+      );
+    }
+    .phil-badge {
+      position: absolute;
+      bottom: 2rem; right: 2rem;
+      width: 96px; height: 96px;
+      border-radius: 50%;
+      border: 1px solid rgba(193,123,79,.35);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2px;
+    }
+    .phil-badge-num {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 300;
+      color: var(--clay-light);
+      line-height: 1;
+    }
+    .phil-badge-lbl {
+      font-size: .52rem;
+      font-weight: 500;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: rgba(193,123,79,.65);
+      text-align: center;
+    }
+    .phil-body {
+      font-size: clamp(.88rem, 1.3vw, 1rem);
+      font-weight: 300;
+      line-height: 1.85;
+      color: rgba(246,242,232,.68);
+      margin: 1.6rem 0 2.2rem;
+    }
+    .phil-list { list-style: none; display: flex; flex-direction: column; gap: .7rem; margin-bottom: 2.5rem; }
+    .phil-list li {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: .84rem;
+      font-weight: 300;
+      letter-spacing: .02em;
+      color: rgba(246,242,232,.75);
+    }
+    .phil-list li::before {
+      content: '';
+      display: block;
+      width: 18px; height: 1px;
+      background: var(--clay-light);
+      flex-shrink: 0;
+    }
+
+    /* ── STATS ─────────────────────────────────────────────── */
+    .stats {
+      background: var(--clay-light);
+      padding: 4rem var(--pad-x);
+    }
+    .stats-grid {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(4,1fr);
+      gap: 2rem;
+      text-align: center;
+    }
+    @media (max-width: 680px) { .stats-grid { grid-template-columns: repeat(2,1fr); } }
+    .stat-num {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 5vw, 3.8rem);
+      font-weight: 300;
+      color: var(--forest);
+      line-height: 1;
+      margin-bottom: .45rem;
+    }
+    .stat-lbl {
+      font-size: .62rem;
+      font-weight: 500;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: rgba(18,32,22,.58);
+    }
+
+    /* ── TESTIMONIALS ──────────────────────────────────────── */
+    .testimonials { background: var(--cream); }
+    .testi-hd { text-align: center; margin-bottom: 4rem; }
+    .testi-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 1.5rem;
+    }
+    @media (max-width: 900px) { .testi-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 560px) { .testi-grid { grid-template-columns: 1fr; } }
+    .testi-card {
+      background: #fff;
+      padding: 2.25rem;
+      border: 1px solid rgba(193,123,79,.14);
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+    .testi-stars { display: flex; gap: 3px; }
+    .testi-stars span { color: var(--clay-dark); font-size: .82rem; }
+    .testi-quote {
+      font-family: var(--font-display);
+      font-size: 1.12rem;
+      font-style: italic;
+      font-weight: 300;
+      line-height: 1.55;
+      color: var(--forest);
+    }
+    .testi-author {
+      margin-top: auto;
+      display: flex;
+      align-items: center;
+      gap: .75rem;
+    }
+    .testi-avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: var(--forest-mid);
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--font-display);
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--clay-light);
+    }
+    .testi-name {
+      font-size: .76rem;
+      font-weight: 500;
+      color: var(--forest);
+    }
+    .testi-meta {
+      font-size: .68rem;
+      font-weight: 300;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    /* ── QUOTE / CTA ───────────────────────────────────────── */
+    .booking {
+      background: var(--forest);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .booking-glow {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 50%, rgba(193,123,79,.11) 0%, transparent 65%);
+      pointer-events: none;
+    }
+    .booking-inner { position: relative; z-index: 1; }
+    .booking-body {
+      font-size: clamp(.88rem, 1.3vw, 1rem);
+      font-weight: 300;
+      line-height: 1.75;
+      color: rgba(246,242,232,.66);
+      max-width: 420px;
+      margin: 1.2rem auto 2.5rem;
+    }
+    .booking-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .booking-note {
+      margin-top: 1.5rem;
+      font-size: .68rem;
+      font-weight: 300;
+      letter-spacing: .04em;
+      color: rgba(246,242,232,.32);
+    }
+
+    /* ── FOOTER ────────────────────────────────────────────── */
+    .footer {
+      background: #0A130D;
+      padding: 4rem var(--pad-x) 2rem;
+    }
+    .footer-inner { max-width: var(--max-w); margin: 0 auto; }
+    .footer-top {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 3rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid rgba(193,123,79,.1);
+      margin-bottom: 2rem;
+    }
+    @media (max-width: 780px) { .footer-top { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 440px) { .footer-top { grid-template-columns: 1fr; } }
+    .footer-logo {
+      font-family: var(--font-display);
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #fff;
+      letter-spacing: .02em;
+      margin-bottom: .9rem;
+    }
+    .footer-logo span { color: var(--clay-light); }
+    .footer-tag {
+      font-size: .78rem;
+      font-weight: 300;
+      color: rgba(255,255,255,.35);
+      line-height: 1.65;
+      margin-bottom: 1.4rem;
+      max-width: 250px;
+    }
+    .footer-social { display: flex; gap: .65rem; }
+    .footer-social a {
+      width: 30px; height: 30px;
+      border: 1px solid rgba(193,123,79,.2);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: .6rem;
+      color: rgba(193,123,79,.55);
+      transition: all .25s;
+    }
+    .footer-social a:hover { border-color: var(--clay-light); color: var(--clay-light); }
+    .fcol-title {
+      font-size: .58rem;
+      font-weight: 500;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      color: var(--clay-light);
+      margin-bottom: 1.1rem;
+    }
+    .fcol ul { list-style: none; display: flex; flex-direction: column; gap: .6rem; }
+    .fcol ul a {
+      font-size: .78rem;
+      font-weight: 300;
+      color: rgba(255,255,255,.38);
+      transition: color .25s;
+    }
+    .fcol ul a:hover { color: rgba(193,123,79,.75); }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-copy {
+      font-size: .68rem;
+      font-weight: 300;
+      color: rgba(255,255,255,.22);
+    }
+    .footer-legal { display: flex; gap: 1.5rem; }
+    .footer-legal a {
+      font-size: .68rem;
+      font-weight: 300;
+      color: rgba(255,255,255,.22);
+      transition: color .25s;
+    }
+    .footer-legal a:hover { color: rgba(193,123,79,.55); }
+
+    /* ── SCROLL REVEAL ─────────────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(22px);
+      transition: opacity .75s ease, transform .75s ease;
+    }
+    .reveal.in { opacity: 1; transform: translateY(0); }
+    .d1 { transition-delay: .1s; }
+    .d2 { transition-delay: .2s; }
+    .d3 { transition-delay: .3s; }
+    .d4 { transition-delay: .4s; }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav" id="site-nav">
+  <div class="nav-logo">Stonebrook<span>.</span></div>
+  <ul class="nav-links">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#gallery">Gallery</a></li>
+    <li><a href="#philosophy">Our Process</a></li>
+    <li><a href="#testimonials">Reviews</a></li>
+    <li><a href="#quote">Contact</a></li>
+  </ul>
+  <a href="#quote" class="nav-cta">Get a Quote</a>
+</nav>
+
+<!-- HERO -->
+<div id="hero-wrapper">
+  <section id="hero">
+    <canvas id="hero-canvas"></canvas>
+    <div class="hero-overlay"></div>
+
+    <div class="scroll-indicator">
+      <div class="scroll-copy">
+        <span class="scroll-kicker">Landscape Design &amp; Build · Austin, TX</span>
+        <div class="scroll-title">
+          <span>Reimagine Your</span>
+          <span>Outdoor Space</span>
+        </div>
+      </div>
+      <div class="scroll-cue">
+        <span class="scroll-line"></span>
+        <div class="scroll-chevrons">
+          <div class="scroll-chevron"></div>
+          <div class="scroll-chevron"></div>
+          <div class="scroll-chevron"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hero-content">
+      <span class="hero-label">Stonebrook Landscape Co.</span>
+      <h1 class="hero-headline">Where Land<br><em>Meets Artistry</em></h1>
+      <p class="hero-sub">Licensed designers and master craftsmen building landscapes that grow more beautiful every season — from first sketch to final stone.</p>
+      <div class="hero-btns">
+        <a href="#quote" class="btn btn--clay">Request a Quote</a>
+        <a href="#services" class="btn btn--ghost">Explore Services</a>
+      </div>
+    </div>
+  </section>
+</div>
+
+<!-- TICKER -->
+<div class="ticker">
+  <div class="ticker-track">
+    <span class="ticker-item">Landscape Design<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Hardscaping &amp; Patios<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Irrigation Systems<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Outdoor Lighting<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Lawn Care &amp; Maintenance<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Retaining Walls<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Landscape Design<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Hardscaping &amp; Patios<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Irrigation Systems<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Outdoor Lighting<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Lawn Care &amp; Maintenance<span class="ticker-dot"></span></span>
+    <span class="ticker-item">Retaining Walls<span class="ticker-dot"></span></span>
+  </div>
+</div>
+
+<!-- SERVICES -->
+<section class="section services" id="services">
+  <div class="section-inner">
+    <div class="services-hd">
+      <div>
+        <span class="kicker reveal">Our Services</span>
+        <h2 class="display reveal d1">Built for How<br><em>You Live Outside</em></h2>
+      </div>
+      <p class="services-sub reveal d2">Every project starts with a free on-site consultation. We design around your land, your climate, and how you actually use your yard — not a catalog template.</p>
+    </div>
+    <div class="services-grid">
+
+      <div class="svc-card reveal">
+        <span class="svc-num">01</span>
+        <svg class="svc-icon" viewBox="0 0 32 32" fill="none" stroke="#C17B4F" stroke-width="1.2"><path d="M16 29V15"/><path d="M16 15C16 15 8 13 8 6c7 0 8 6 8 9z"/><path d="M16 15c0 0 8-2 8-9-7 0-8 6-8 9z"/></svg>
+        <div class="svc-name">Landscape Design</div>
+        <p class="svc-desc">Custom master plans that balance plantings, hardscape, and sightlines — built around your property's natural grade and light.</p>
+        <span class="svc-link">Learn More →</span>
+      </div>
+
+      <div class="svc-card reveal d1">
+        <span class="svc-num">02</span>
+        <svg class="svc-icon" viewBox="0 0 32 32" fill="none" stroke="#C17B4F" stroke-width="1.2"><rect x="4" y="18" width="7" height="7"/><rect x="13" y="18" width="7" height="7"/><rect x="22" y="18" width="6" height="7"/><rect x="8" y="9" width="7" height="7"/><rect x="17" y="9" width="7" height="7"/></svg>
+        <div class="svc-name">Hardscaping &amp; Patios</div>
+        <p class="svc-desc">Paver patios, natural stone walkways, outdoor kitchens, and fire features built to anchor years of gatherings.</p>
+        <span class="svc-link">Learn More →</span>
+      </div>
+
+      <div class="svc-card reveal d2">
+        <span class="svc-num">03</span>
+        <svg class="svc-icon" viewBox="0 0 32 32" fill="none" stroke="#C17B4F" stroke-width="1.2"><circle cx="16" cy="16" r="2.4"/><path d="M16 5v4M16 27v-4M5 16h4M27 16h-4M9 9l2.6 2.6M23 23l-2.6-2.6M23 9l-2.6 2.6M9 23l2.6-2.6"/></svg>
+        <div class="svc-name">Irrigation Systems</div>
+        <p class="svc-desc">Smart, zoned irrigation that waters precisely what each bed needs — cutting water waste while keeping everything thriving.</p>
+        <span class="svc-link">Learn More →</span>
+      </div>
+
+      <div class="svc-card reveal">
+        <span class="svc-num">04</span>
+        <svg class="svc-icon" viewBox="0 0 32 32" fill="none" stroke="#C17B4F" stroke-width="1.2"><path d="M16 4v6"/><circle cx="16" cy="15" r="5"/><path d="M9 28l3-7h8l3 7"/></svg>
+        <div class="svc-name">Outdoor Lighting</div>
+        <p class="svc-desc">Layered low-voltage lighting that extends your evenings outside and highlights the landscape after dark.</p>
+        <span class="svc-link">Learn More →</span>
+      </div>
+
+      <div class="svc-card reveal d1">
+        <span class="svc-num">05</span>
+        <svg class="svc-icon" viewBox="0 0 32 32" fill="none" stroke="#C17B4F" stroke-width="1.2"><path d="M6 24c4-10 8-14 10-16 2 2 6 6 10 16"/><path d="M4 24h24"/></svg>
+        <div class="svc-name">Lawn Care &amp; Maintenance</div>
+        <p class="svc-desc">Seasonal mowing, fertilization, and bed care programs that keep your investment looking sharp year-round.</p>
+        <span class="svc-link">Learn More →</span>
+      </div>
+
+      <div class="svc-card reveal d2">
+        <span class="svc-num">06</span>
+        <svg class="svc-icon" viewBox="0 0 32 32" fill="none" stroke="#C17B4F" stroke-width="1.2"><path d="M5 27V14l11-9 11 9v13"/><path d="M5 27h22"/><path d="M13 27v-8h6v8"/></svg>
+        <div class="svc-name">Retaining Walls</div>
+        <p class="svc-desc">Engineered stone and block retaining walls that solve drainage and grade problems while adding structure to your beds.</p>
+        <span class="svc-link">Learn More →</span>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="section gallery" id="gallery">
+  <div class="section-inner">
+    <div class="gallery-hd">
+      <span class="kicker kicker--light reveal">The Transformation</span>
+      <h2 class="display display--light reveal d1">Same Lot.<br><em>Entirely New Outlook</em></h2>
+      <p class="gallery-sub reveal d2">Drag the slider to see this Westlake property before our crew broke ground and after the final walkthrough.</p>
+    </div>
+
+    <div class="reveal-wrap reveal d3" id="reveal">
+      <img class="reveal-before" src="assets/frames/frame_0001.jpg" alt="Yard before landscaping">
+      <img class="reveal-after" src="assets/frames/frame_0121.jpg" alt="Yard after landscaping">
+      <span class="reveal-tag reveal-tag--before">Before</span>
+      <span class="reveal-tag reveal-tag--after">After</span>
+      <div class="reveal-handle"></div>
+      <input type="range" min="0" max="100" value="50" class="reveal-slider" id="reveal-slider" aria-label="Drag to compare before and after">
+    </div>
+    <p class="reveal-caption">Drag left and right to compare</p>
+  </div>
+</section>
+
+<!-- PHILOSOPHY -->
+<section class="section philosophy" id="philosophy">
+  <div class="section-inner">
+    <div class="philosophy-inner">
+      <div class="phil-visual reveal">
+        <div class="phil-art"></div>
+        <div class="phil-lines"></div>
+        <div class="phil-badge">
+          <span class="phil-badge-num">15</span>
+          <span class="phil-badge-lbl">Years in<br>Business</span>
+        </div>
+      </div>
+      <div>
+        <span class="kicker kicker--light reveal">Our Process</span>
+        <h2 class="display display--light reveal d1">Design is Rooted<br><em>in the Land</em></h2>
+        <p class="phil-body reveal d2">Stonebrook crews are trained horticulturists and stoneworkers, not subcontracted labor. We walk every property before we draw a single line — soil, drainage, and sun exposure shape the design before aesthetics ever do.</p>
+        <ul class="phil-list reveal d2">
+          <li>Licensed, bonded &amp; insured crews</li>
+          <li>Native &amp; drought-tolerant plant palettes</li>
+          <li>Free on-site design consultations</li>
+          <li>One crew from groundbreak to final walkthrough</li>
+        </ul>
+        <a href="#quote" class="btn btn--outline-clay reveal d3">Meet Our Crew</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stats-grid">
+    <div class="reveal"><div class="stat-num">500+</div><div class="stat-lbl">Properties Transformed</div></div>
+    <div class="reveal d1"><div class="stat-num">97%</div><div class="stat-lbl">Client Satisfaction</div></div>
+    <div class="reveal d2"><div class="stat-num">15</div><div class="stat-lbl">Years in Business</div></div>
+    <div class="reveal d3"><div class="stat-num">4.9★</div><div class="stat-lbl">Google Reviews</div></div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<section class="section testimonials" id="testimonials">
+  <div class="section-inner">
+    <div class="testi-hd">
+      <span class="kicker reveal">Client Stories</span>
+      <h2 class="display reveal d1">Real Yards,<br><em>Real Transformations</em></h2>
+    </div>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="testi-quote">"Our backyard went from a mud pit to the place our whole family gathers every weekend. The design team actually listened to how we wanted to use the space."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">R</div>
+          <div><div class="testi-name">Rachel D.</div><div class="testi-meta">Full Backyard Redesign · Tarrytown</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal d1">
+        <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="testi-quote">"The retaining wall and drainage work solved a flooding issue three other companies couldn't figure out. Clean work, on schedule, no surprises on the invoice."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">M</div>
+          <div><div class="testi-name">Marcus T.</div><div class="testi-meta">Retaining Wall &amp; Drainage · Westlake</div></div>
+        </div>
+      </div>
+      <div class="testi-card reveal d2">
+        <div class="testi-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="testi-quote">"We get compliments on the lighting alone. Stonebrook turned a flat, boring lawn into something that actually looks designed — even at night."</p>
+        <div class="testi-author">
+          <div class="testi-avatar">L</div>
+          <div><div class="testi-name">Lauren P.</div><div class="testi-meta">Outdoor Lighting &amp; Patio · Circle C</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- QUOTE / CTA -->
+<section class="section booking" id="quote">
+  <div class="booking-glow"></div>
+  <div class="section-inner booking-inner">
+    <span class="kicker kicker--light reveal">Start Your Project</span>
+    <h2 class="display display--light reveal d1">Your Yard's Next<br><em>Chapter Starts Here</em></h2>
+    <p class="booking-body reveal d2">Request a free on-site consultation and walk through a design built around how you actually want to use your outdoor space.</p>
+    <div class="booking-btns reveal d3">
+      <a href="tel:+15125550148" class="btn btn--clay">Call (512) 555-0148</a>
+      <a href="mailto:hello@stonebrooklandscape.com" class="btn btn--ghost">Email Us</a>
+    </div>
+    <p class="booking-note reveal d4">Free consultations · Licensed &amp; insured · Serving greater Austin, TX</p>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <div class="footer-logo">Stonebrook<span>.</span></div>
+        <p class="footer-tag">Design-build landscaping for properties that deserve more than a mow-and-go. Austin, TX — by appointment.</p>
+        <div class="footer-social">
+          <a href="#" title="Instagram">IG</a>
+          <a href="#" title="Facebook">FB</a>
+          <a href="#" title="Houzz">HZ</a>
+        </div>
+      </div>
+      <div class="fcol">
+        <div class="fcol-title">Services</div>
+        <ul>
+          <li><a href="#">Landscape Design</a></li>
+          <li><a href="#">Hardscaping &amp; Patios</a></li>
+          <li><a href="#">Irrigation Systems</a></li>
+          <li><a href="#">Outdoor Lighting</a></li>
+          <li><a href="#">Lawn Care</a></li>
+          <li><a href="#">Retaining Walls</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <div class="fcol-title">Company</div>
+        <ul>
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Our Crew</a></li>
+          <li><a href="#">Before &amp; After</a></li>
+          <li><a href="#">Careers</a></li>
+          <li><a href="#">Financing</a></li>
+        </ul>
+      </div>
+      <div class="fcol">
+        <div class="fcol-title">Visit</div>
+        <ul>
+          <li><a href="#">2418 Bluebonnet Ln</a></li>
+          <li><a href="#">Austin, TX 78704</a></li>
+          <li><a href="#">Mon–Fri: 7am – 5pm</a></li>
+          <li><a href="#">Sat: 8am – 2pm</a></li>
+          <li><a href="tel:+15125550148">(512) 555-0148</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Stonebrook Landscape Co. All rights reserved.</p>
+      <nav class="footer-legal">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+        <a href="#">Licensing</a>
+      </nav>
+    </div>
+  </div>
+</footer>
+
+<script>
+gsap.registerPlugin(ScrollTrigger);
+
+/* ══════════════════════════════════════════════════════════════
+   initFrameScrollHero — verbatim from wow-website-builder-main
+   /scripts/hero-frame-scroll.js (with is-visible class patch)
+══════════════════════════════════════════════════════════════ */
+function initFrameScrollHero(options) {
+  var cfg = Object.assign({
+    frameCount        : 0,
+    framePath         : function(i) { return 'frames/frame_' + String(i).padStart(4, '0') + '.jpg'; },
+    wrapperSelector   : '#hero-wrapper',
+    canvasId          : 'hero-canvas',
+    overlaySelector   : '.hero-overlay',
+    contentSelector   : '.hero-content',
+    indicatorSelector : '.scroll-indicator',
+    heroSelector      : '#hero',
+    scrollMultiplier  : 3,
+    animCompletesAt   : 0.67,
+    indicatorFadeEnd  : 0.12,
+    overlayStart      : 0.70,
+    overlayMaxAlpha   : 0.62,
+    contentStart      : 0.82,
+    contentRise       : 18,
+    fit               : 'cover',
+    fallbackBackground: 'linear-gradient(160deg,#0c1810 0%,#1c3322 50%,#2c4a30 100%)',
+  }, options);
+
+  var canvas  = document.getElementById(cfg.canvasId);
+  var ctx     = canvas.getContext('2d');
+  var overlay = document.querySelector(cfg.overlaySelector);
+  var content = document.querySelector(cfg.contentSelector);
+  var indic   = document.querySelector(cfg.indicatorSelector);
+  var heroEl  = document.querySelector(cfg.heroSelector);
+
+  var currentFrame = 0;
+  var rafPending   = false;
+  var frames       = [];
+
+  function resizeCanvas() {
+    canvas.width        = window.innerWidth  * devicePixelRatio;
+    canvas.height       = window.innerHeight * devicePixelRatio;
+    canvas.style.width  = window.innerWidth  + 'px';
+    canvas.style.height = window.innerHeight + 'px';
+    ctx.scale(devicePixelRatio, devicePixelRatio);
+    drawFrame(currentFrame);
+  }
+  window.addEventListener('resize', resizeCanvas);
+  resizeCanvas();
+
+  function drawFrame(index) {
+    var img = frames[index];
+    if (!img || !img.complete) return;
+    var w     = window.innerWidth;
+    var h     = window.innerHeight;
+    var scale = cfg.fit === 'contain'
+      ? Math.min(w / img.naturalWidth, h / img.naturalHeight)
+      : Math.max(w / img.naturalWidth, h / img.naturalHeight);
+    var sw = img.naturalWidth  * scale;
+    var sh = img.naturalHeight * scale;
+    var sx = (w - sw) / 2;
+    var sy = (h - sh) / 2;
+    ctx.clearRect(0, 0, w, h);
+    ctx.drawImage(img, sx, sy, sw, sh);
+  }
+
+  function renderFrame(index) {
+    if (rafPending) return;
+    rafPending = true;
+    requestAnimationFrame(function() {
+      drawFrame(index);
+      rafPending = false;
+    });
+  }
+
+  for (var i = 1; i <= cfg.frameCount; i++) {
+    (function(frameIndex) {
+      var img = new Image();
+      img.src = cfg.framePath(frameIndex);
+      img.onload = function() {
+        if (frameIndex === 1) drawFrame(0);
+      };
+      img.onerror = function() {
+        if (frameIndex === 1 && heroEl) {
+          heroEl.style.background = cfg.fallbackBackground;
+        }
+      };
+      frames[frameIndex - 1] = img;
+    })(i);
+  }
+
+  ScrollTrigger.create({
+    trigger   : cfg.wrapperSelector,
+    start     : 'top top',
+    end       : '+=' + (window.innerHeight * cfg.scrollMultiplier),
+    pin       : true,
+    pinSpacing: true,
+    scrub     : true,
+    onUpdate  : function(self) {
+      var p = Math.min(self.progress / cfg.animCompletesAt, 1);
+
+      var idx = Math.min(cfg.frameCount - 1, Math.floor(p * cfg.frameCount));
+      if (idx !== currentFrame) {
+        currentFrame = idx;
+        renderFrame(idx);
+      }
+
+      if (indic) {
+        indic.style.opacity = Math.max(0, 1 - p / cfg.indicatorFadeEnd);
+      }
+
+      if (overlay) {
+        var ot    = Math.max(0, Math.min(1, (p - cfg.overlayStart) / (1 - cfg.overlayStart)));
+        var alpha = ot * cfg.overlayMaxAlpha;
+        overlay.style.background = 'rgba(8,16,11,' + alpha.toFixed(3) + ')';
+      }
+
+      if (content) {
+        var ct = Math.max(0, Math.min(1, (p - cfg.contentStart) / (1 - cfg.contentStart)));
+        content.style.opacity   = ct;
+        content.style.transform = 'translateY(' + ((1 - ct) * cfg.contentRise) + 'px)';
+        if (ct > 0.08) content.classList.add('is-visible');
+        else           content.classList.remove('is-visible');
+      }
+    }
+  });
+}
+
+initFrameScrollHero({
+  frameCount : 121,
+  framePath  : function(i) { return 'assets/frames/frame_' + String(i).padStart(4, '0') + '.jpg'; },
+});
+
+/* ── nav scroll state ── */
+window.addEventListener('scroll', function(){
+  document.getElementById('site-nav').classList.toggle('scrolled', scrollY > 60);
+});
+
+/* ── before/after slider ── */
+var revealWrap   = document.getElementById('reveal');
+var revealSlider = document.getElementById('reveal-slider');
+revealSlider.addEventListener('input', function() {
+  revealWrap.style.setProperty('--reveal', this.value + '%');
+});
+
+/* ── intersection reveal ── */
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+}, { threshold: .11 });
+document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
+</script>
+</body>
+</html>

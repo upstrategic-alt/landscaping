@@ -1,0 +1,7 @@
+# Raw video source — frames already extracted to assets/frames/
+*.mp4
+*.mov
+*.avi
+
+# Builder toolkit — not part of the deployed site
+reference_site/
